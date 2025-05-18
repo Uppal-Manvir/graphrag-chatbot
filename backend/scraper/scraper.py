@@ -7,10 +7,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
+from backend.config import PAGES_JSONL
+
+
 # Constants
 BASE_URL = "https://www.madewithnestle.ca/sitemap"
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
-JSONL_PATH = os.path.join(DATA_DIR, 'pages.jsonl')
+#JSONL_PATH = os.path.join(DATA_DIR, 'pages.jsonl')
 COOKIE_BUTTON_SELECTOR = '#onetrust-accept-btn-handler'
 
 def init_driver(headless: bool = True) -> webdriver.Chrome:
@@ -86,7 +89,7 @@ def save_record(record: dict):
     """
     Append a JSON record to the JSONL output file.
     """
-    with open(JSONL_PATH, 'a', encoding='utf-8') as f:
+    with open(PAGES_JSONL, 'a', encoding='utf-8') as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
