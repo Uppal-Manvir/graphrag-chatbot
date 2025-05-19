@@ -19,10 +19,12 @@ def chunk_text(text):
 with open(PAGES_JSONL, 'r', encoding='utf-8') as infile, open(CHUNKS_JSONL, 'w', encoding='utf-8') as out:
     for line in infile:
         rec = json.loads(line)
+        print("added chunk")
         for i, chunk in enumerate(chunk_text(rec['text'])):
-            out.write(json.dumps({
-                "url": rec['url'],
-                "timestamp": rec['timestamp'],
-                "chunk_index": i,
-                "text": chunk
-            }) + "\n")
+            if len(chunk) > 0:
+                out.write(json.dumps({
+                    "url": rec['url'],
+                    "timestamp": rec['timestamp'],
+                    "chunk_index": i,
+                    "text": chunk
+                }) + "\n")
