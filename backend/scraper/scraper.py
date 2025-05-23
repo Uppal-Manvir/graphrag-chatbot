@@ -16,16 +16,23 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 #JSONL_PATH = os.path.join(DATA_DIR, 'pages.jsonl')
 COOKIE_BUTTON_SELECTOR = '#onetrust-accept-btn-handler'
 
-def init_driver(headless: bool = True) -> webdriver.Chrome:
+def init_driver(headless: bool) -> webdriver.Chrome:
     """
     Initialize nd setup driver
     """
     options = Options()
     if headless:
         options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+    #options.add_argument("window-size=1400,600")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--start-maximized")
-    return webdriver.Chrome(options=options)
+
+    driver = webdriver.Chrome(options=options)
+
+    # size = driver.get_window_size()
+    # print(f'Window size: width = {size["width"]}px, height = {size["height"]}px')
+    return driver
 
 
 def get_sitemap_urls(driver: webdriver.Chrome, sitemap_url: str = BASE_URL) -> list:
@@ -36,13 +43,15 @@ def get_sitemap_urls(driver: webdriver.Chrome, sitemap_url: str = BASE_URL) -> l
     time.sleep(2)
     dismiss_cookie_banner(driver) #TODO update condintional to check if exists 
 
-    elements = driver.find_elements(By.CLASS_NAME, "sitemap-sublist-item")
+    container = driver.find_element(By.CLASS_NAME, "sitemap")
+    link_els = container.find_elements(By.TAG_NAME, "a")
+    #elements = driver.find_elements(By.CLASS_NAME, "sitemap-sublist-item")
     urls = []
-    for el in elements:
+    for el in link_els:
         try:
-            link = el.find_element(By.TAG_NAME, "a").get_attribute("href")
-            if link:
-                urls.append(link)
+            href = el.get_attribute("href")
+            if href:
+                urls.append(href)
         except Exception:
             continue
     return urls
@@ -66,7 +75,7 @@ def fetch_page(driver: webdriver.Chrome, url: str) -> str:
     Fetch page and get its HTML
     """
     driver.get(url)
-    time.sleep(2)
+    time.sleep(1)
     return driver.page_source
 
 
@@ -98,7 +107,7 @@ def main():
     Full scraping run: fetch all sitemap URLs, scrape, parse, and save each page.
     """
     ensure_data_dir()
-    driver = init_driver(headless=False)
+    driver = init_driver(False)
     try:
         urls = get_sitemap_urls(driver)
         print(f"Found {len(urls)} URLs to scrape.")
