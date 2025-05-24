@@ -16,6 +16,32 @@ vector_field = "contentVector"
 credential    = AzureKeyCredential(admin_key)
 search_client = SearchClient(endpoint=endpoint, index_name=index_name, credential=credential)
 
+''' 
+
+------WILL DELETE ALL DOCS -------- 
+
+results = search_client.search(
+    search_text="*",
+    select=["id"],
+    top=1000,
+    include_total_count=True
+)
+
+ids = [doc["id"] for doc in results]
+
+print(f"Found {len(ids)} documents; deleting…")
+
+# 3) batch‐delete by key
+if ids:
+    delete_actions = [{"id": doc_id} for doc_id in ids]
+    delete_results = search_client.delete_documents(documents=delete_actions)
+    succeeded = sum(1 for r in delete_results if r.succeeded)
+    print(f"✅ Deleted {succeeded}/{len(delete_actions)} documents.")
+else:
+    print(" No documents found to delete.")
+
+'''
+
 #Path to your embeddings.jsonl
 EMBEDDINGS_JSONL = os.path.join(os.path.dirname(CHUNKS_JSONL), "embeddings.jsonl")
 
