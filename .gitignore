@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+env/
+venv/
+*.egg-info/
+*.log
+
+# Node (React)
+node_modules/
+dist/
+build/
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Environment + Secrets
+.env
+.env.*
+
+# Scraper outputs
+backend/scraper/*.txt
+backend/scraper/*.json
+backend/scraper/__pycache__/
+
+# Frontend build
+frontend/build/
+frontend/dist/
+.venv-py310/
