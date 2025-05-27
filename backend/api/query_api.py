@@ -19,6 +19,16 @@ from azure.search.documents import SearchClient
 from backend.graph_rag.graph_query import query_graph
 from openai import OpenAI
 
+DOMAIN_PROMPT = """
+You are a Nestlé chatbot. Classify user questions into exactly one of these domains:
+- product (questions about product names, ingredients, nutrition)
+- recipe (questions about cooking, ingredients lists, steps)
+- policy (questions about privacy policy, terms, cookies)
+- off-topic (anything else)
+
+Respond with a single word: product, recipe, policy, or off-topic.
+"""
+
 # --------------------
 # Load environment
 # --------------------
@@ -34,6 +44,20 @@ search_client = SearchClient(
 # OpenAI config
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+
+def detect_domain_llm(question: str) -> str:
+    resp = client.chat.completions.create(
+      model="gpt-4o-mini",
+      messages=[
+        {"role":"system", "content": DOMAIN_PROMPT},
+        {"role":"user", "content": question}
+      ],
+      temperature=0.0
+    )
+    domain = resp.choices[0].message.content.strip().lower()
+    # sanitize
+    print(domain)
+    return domain if domain in {"product","recipe","policy"} else "off-topic"
 
 # --------------------
 # 2) Initialize FastAPI
@@ -61,14 +85,23 @@ def query(req: QueryRequest):
     2) Graph-traverse Cosmos DB Gremlin
     3) Build prompt and query LLM
     """
+    print("HIT QUERY ENDPOINT")
     # Vector search
+    domain = detect_domain_llm(req.question)
+    if not domain:
+        # off-topic
+        raise HTTPException(
+            status_code=400,
+            detail="Sorry—I only answer questions about Nestlé products, recipes, or policies."
+        )
     results = search_client.search(
         search_text=req.question,
         top=5
     )
     chunk_ids = [doc["id"] for doc in results]
     snippets = [doc.get("text_excerpt", "") for doc in results]
-
+    if not chunk_ids: #empty chunk ids crashes gremlin query fix later
+        return []
     # Graph retrieval
     entities = query_graph(chunk_ids, max_hops=1)
     entity_ids = [e["id"] for e in entities]
