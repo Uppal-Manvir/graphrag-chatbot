@@ -11,8 +11,8 @@ export default defineConfig({
   server: {
     proxy: {
       // any request to /query_api will be forwarded to port 8000
-      '/query_api': {
-        target: 'http://localhost:8000',
+      '/query': {
+        target: 'http://127.0.0.1:8000',
         
         changeOrigin: true,
         secure: false,

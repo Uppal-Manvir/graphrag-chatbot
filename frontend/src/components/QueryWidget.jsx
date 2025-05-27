@@ -25,7 +25,7 @@ export default function QueryWidget() {
 
     try {
       console.log("BEFORE REQ")
-      const res = await fetch('/api/query_api', {
+      const res = await fetch('/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userMsg.content })
@@ -53,13 +53,16 @@ export default function QueryWidget() {
         onClick={handleToggle}
         className="fixed bottom-4 right-4 z-50 p-3 bg-blue-600 rounded-full shadow-lg text-white hover:bg-blue-700 focus:outline-none"
       >
-        {open ? 'Close' : 'Chat'}
+        {open ? 'Close' : 'AeroAdvisor'}
       </button>
 
       {/* Chat window */}
       {open && (
         <div className="fixed bottom-20 right-4 flex flex-col h-96 w-80 bg-white rounded-2xl shadow-lg overflow-hidden z-40">
-          <div className="flex-1 p-4 overflow-y-auto space-y-2">
+            <div className="flex items-center justify-center p-2 bg-blue-600 text-white">
+                <span className="font-semibold">AeroAdvisor</span>
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto space-y-2">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
