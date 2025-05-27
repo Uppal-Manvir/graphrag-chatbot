@@ -81,6 +81,7 @@ def upsert_chunk(chunk):
         {
             "chunkId": chunk["id"],
             "url":     chunk["url"],
+            "domain": chunk["domain"],
             "excerpt": chunk["text_excerpt"],
             "ts":      chunk["timestamp"]
         }
@@ -169,6 +170,7 @@ def load_embeddings(path):
             yield {
                 "id":           re.sub(r"[^A-Za-z0-9_\-=]", "_", doc["id"]),
                 "url":          doc["metadata"]["url"],
+                "domain": doc["metadata"]["domain"],
                 "chunk_index":  doc["metadata"]["chunk_index"],
                 "text_excerpt": doc["metadata"]["text_excerpt"],
                 "timestamp":    doc["metadata"]["timestamp"]

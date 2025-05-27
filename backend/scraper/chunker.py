@@ -1,5 +1,6 @@
 import json
 from backend.config import PAGES_JSONL, CHUNKS_JSONL
+from backend.scraper.utils import infer_domain_from_url
 
 MAX_CHARS = 3000
 
@@ -22,9 +23,11 @@ with open(PAGES_JSONL, 'r', encoding='utf-8') as infile, open(CHUNKS_JSONL, 'w',
         print("added chunk")
         for i, chunk in enumerate(chunk_text(rec['text'])):
             if len(chunk) > 0:
+                domain = infer_domain_from_url(rec['url'])
                 out.write(json.dumps({
                     "url": rec['url'],
                     "timestamp": rec['timestamp'],
+                    "domain": domain,
                     "chunk_index": i,
                     "text": chunk
                 }) + "\n")

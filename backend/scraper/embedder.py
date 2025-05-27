@@ -58,6 +58,7 @@ def main():
                     "values": emb_item.embedding,
                     "metadata": {
                         "url":         rec['url'],
+                        "domain": rec['domain'],
                         "chunk_index": rec['chunk_index'],
                         "text_excerpt": rec['text'][:100],
                         "timestamp":    rec['timestamp']

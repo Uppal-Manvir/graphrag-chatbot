@@ -16,9 +16,9 @@ vector_field = "contentVector"
 credential    = AzureKeyCredential(admin_key)
 search_client = SearchClient(endpoint=endpoint, index_name=index_name, credential=credential)
 
-''' 
+'''
 
-------WILL DELETE ALL DOCS -------- 
+#------WILL DELETE ALL DOCS -------- 
 
 results = search_client.search(
     search_text="*",
@@ -31,7 +31,7 @@ ids = [doc["id"] for doc in results]
 
 print(f"Found {len(ids)} documents; deleting…")
 
-# 3) batch‐delete by key
+# batch‐delete by key
 if ids:
     delete_actions = [{"id": doc_id} for doc_id in ids]
     delete_results = search_client.delete_documents(documents=delete_actions)
@@ -53,6 +53,7 @@ def load_embeddings(path):
             yield {
                 "id":           re.sub(r"[^A-Za-z0-9_\-=]", "_", doc["id"]),
                 "url":          doc["metadata"]["url"],
+                "domain": doc["metadata"]["domain"],
                 "chunk_index":  doc["metadata"]["chunk_index"],
                 "text_excerpt": doc["metadata"]["text_excerpt"],
                 "timestamp":    doc["metadata"]["timestamp"],
