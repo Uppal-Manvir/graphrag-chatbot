@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.query_api import router as query_router   # your existing FastAPI router
+from backend.api.query_api import router as query_router   
 
 app = FastAPI()
 

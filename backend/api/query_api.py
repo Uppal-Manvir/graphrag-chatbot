@@ -11,7 +11,7 @@ This module provides a unified `/query` endpoint that:
 """
 
 import os
-from fastapi import FastAPI
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from azure.core.credentials import AzureKeyCredential
@@ -62,7 +62,7 @@ def detect_domain_llm(question: str) -> str:
 # --------------------
 # 2) Initialize FastAPI
 # --------------------
-app = FastAPI()
+router = APIRouter()
 
 # --------------------
 # Define request/response models
@@ -78,7 +78,7 @@ class QueryResponse(BaseModel):
 # --------------------
 # Unified query endpoint
 # --------------------
-@app.post("/query", response_model=QueryResponse)
+@router.post("", response_model=QueryResponse)
 def query(req: QueryRequest):
     """
     1) Vector-search Azure Cognitive Search
