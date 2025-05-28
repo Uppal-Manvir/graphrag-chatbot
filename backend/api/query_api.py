@@ -85,7 +85,7 @@ def query(req: QueryRequest):
     2) Graph-traverse Cosmos DB Gremlin
     3) Build prompt and query LLM
     """
-    print("HIT QUERY ENDPOINT")
+    #print("HIT QUERY ENDPOINT")
     # Vector search
     domain = detect_domain_llm(req.question)
     if not domain:
