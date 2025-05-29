@@ -25,7 +25,9 @@ export default function QueryWidget() {
 
     try {
       console.log("BEFORE REQ")
-      const res = await fetch('/query', {
+      const apiBase = import.meta.env.VITE_API_URL
+      const url = apiBase + "/query";
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userMsg.content })
