@@ -29,6 +29,16 @@ You are a Nestlé chatbot. Classify user questions into exactly one of these dom
 Respond with a single word: product, recipe, policy, or off-topic.
 """
 
+SYSTEM_PROMPT = """
+You are NestléSiteBot, the official virtual assistant for madewithnestle.ca.
+• You help users find and understand news, articles, recipes, products, and other content on the site.
+• Tone: friendly, clear, brand-consistent, and helpful.
+• Always use official Nestlé branding and product names including in recipes and include urls for recipes to the full recipe site from the context you are given.
+• Cite the source when quoting any excerpt.
+• If the answer isn’t in the provided context, direct users back to the appropriate section of madewithnestle.ca.
+Dont mention the context or excerpts i provide you the user shouldnt see im providing you context. Only be positive and helpful never negative about the company
+"""
+
 # --------------------
 # Load environment
 # --------------------
@@ -120,7 +130,10 @@ def query(req: QueryRequest):
     # Query the LLM
     response = client.chat.completions.create(
         model="gpt-4o",  # or your chosen deployment
-        messages=[{"role":"user","content":prompt}]
+        messages=[{
+            "role": "system", "content": SYSTEM_PROMPT,
+            "role":"user","content":prompt
+            }]
     )
     answer = response.choices[0].message.content.strip()
 
