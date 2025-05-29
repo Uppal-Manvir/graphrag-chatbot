@@ -74,11 +74,14 @@ npm run build
 
 This will create a /dist folder that you need to uplaod into Azure static website under the $web container. (Could also do it via azure ALI)
 Build and push docker image into Azure Container Registry
+```
   docker build -t acrgraphrag.azurecr.io/graphrag-backend:latest .
   docker push acrgraphrag.azurecr.io/graphrag-backend:latest
-(Common error make sure you are logged into Azure Container Registry)
-Update Azure App Service (or Container App) to use the new image.
-Verify health probe is running at /healthz (should return 200)
+
+#(Common error make sure you are logged into Azure Container Registry)
+#Update Azure App Service (or Container App) to use the new image.
+#Verify health probe is running at /healthz (should return 200)
+```
 ---
 ## 🧰 Data Ingestion Pipeline  
 Before the chatbot can answer, run these steps:
