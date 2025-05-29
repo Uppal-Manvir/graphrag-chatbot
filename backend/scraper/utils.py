@@ -1,4 +1,6 @@
 # utils.py
+#Used when splitting pages into chunks to categorize each chunk so when we seach we dont seach all pages only 
+#domain closest to the question 
 def infer_domain_from_url(url: str) -> str:
     u = url.lower()
     if "/recipe" in u or "/recipes" in u or "flavours" in u or "blog" in u:

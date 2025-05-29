@@ -22,11 +22,11 @@ def init_driver(headless: bool) -> webdriver.Chrome:
     Initialize nd setup driver
     """
     options = Options()
-    if headless: #Cloudflare blocked on madewithnestle
+    if headless: #Cloudflare blocked on madewithnestle leave head on
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
     #options.add_argument("window-size=1400,600")  
-    prefs = {
+    prefs = { #leave imgs off to load faster
         "profile.default_content_setting_values": {
             "images": 2,
             "stylesheet": 2
@@ -137,7 +137,7 @@ def get_main_links(driver, toCrawl):
     """Grab all same-domain links under <main>."""
     elems = driver.find_elements(By.CSS_SELECTOR, 'main a')
     hrefs = {e.get_attribute('href') for e in elems if e.get_attribute('href')}
-    print("URLS FOUND BEFORE:::         ", len(hrefs))
+    #print("URLS FOUND BEFORE:::         ", len(hrefs))
     return {h for h in hrefs 
         if h.startswith(BASE_URL2) and h not in toCrawl and "recipe_brand" not in h and "recipe_tags_filter" not in h and "recipe_total_time" not in h}
 
@@ -152,12 +152,12 @@ def main():
     try:
         toCrawl = set(get_sitemap_urls(driver))
         print(f"Found {len(toCrawl)} URLs to scrape.") 
-        seen = set()
+        seen = set() #empty set of links that are seen
 
-        while toCrawl:
+        while toCrawl: #while still links in queue 
             print(f"{len(toCrawl)} LEFT TO CRAWL")
             url = toCrawl.pop()
-            if url in seen:
+            if url in seen:#ignore if already visited
                 continue
             seen.add(url)
 
@@ -176,7 +176,7 @@ def main():
             print(f"Scraped and saved: {url}")
 
             new_links = get_main_links(driver, toCrawl) - seen - toCrawl
-            if new_links:
+            if new_links: #find all nested links
                 print(f"  Found {len(new_links)} new links AFTER")
                 toCrawl.update(new_links)
 
