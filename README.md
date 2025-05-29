@@ -1,4 +1,4 @@
-# NestléSiteBot Chatbot
+# Graphrag Chatbot
 
 **Live Demo:** [Backend API](https://rg-chatbot-eafyfwgkg4e5djef.canadaeast-01.azurewebsites.net)  
 **Frontend (Static Site):** https://graphragstaticfront.z13.web.core.windows.net
