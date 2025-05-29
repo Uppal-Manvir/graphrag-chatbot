@@ -130,10 +130,10 @@ def query(req: QueryRequest):
     # Query the LLM
     response = client.chat.completions.create(
         model="gpt-4o",  # or your chosen deployment
-        messages=[{
-            "role": "system", "content": SYSTEM_PROMPT,
-            "role":"user","content":prompt
-            }]
+        messages=[
+            {"role": "system",  "content": SYSTEM_PROMPT},
+            {"role": "user",    "content": prompt}
+            ]
     )
     answer = response.choices[0].message.content.strip()
 
