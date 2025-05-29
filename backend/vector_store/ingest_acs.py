@@ -18,7 +18,7 @@ search_client = SearchClient(endpoint=endpoint, index_name=index_name, credentia
 
 '''
 
-#------WILL DELETE ALL DOCS -------- 
+#------WILL DELETE ALL DOCS -------- only un comment to clear and reset docs
 
 results = search_client.search(
     search_text="*",
