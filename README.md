@@ -83,7 +83,23 @@ Build and push docker image into Azure Container Registry
 #Verify health probe is running at /healthz (should return 200)
 ```
 ---
-## 🧰 Data Ingestion Pipeline  
+## 🔄 System Architecture & Data Flow
+
+1. **Data Ingestion**  
+   - **Scraper** (`backend/ingest_acs.py`): BFS crawl (via Selenium) of madewithnestle.ca → raw docs  
+   - **Chunker** (`backend/scraper/chunker.py`): splits each page into ~3,000-char chunks  
+   - **Embedder** (`backend/scraper/embedder.py`): calls OpenAI embeddings → writes to Azure Cognitive Search  
+   - **Graph Ingest** (`backend/graph_rag/graph_ingest.py`): loads entities & edges into Cosmos DB Gremlin  
+
+2. **Runtime Query**  
+   1. Frontend POSTS user question to `POST /query`  
+   2. FastAPI backend does **vector search** (Azure Search) → returns top-K chunk IDs + snippets  
+   3. FastAPI backend does **graph traversal** (Cosmos DB Gremlin) on those chunk IDs → related entities  
+   4. **Fused prompt** builder merges snippets + entity summaries + system persona  
+   5. LLM call (OpenAI / Azure OpenAI) → an answer  
+   6. Backend returns `QueryResponse` JSON → frontend renders  
+---
+## 🧰 Data Ingestion Pipeline Breakdown
 Before the chatbot can answer, run these steps:
 After activating python venv 
 
@@ -107,7 +123,7 @@ After activating python venv
    python -m backend.vector_store.ingest_acs
    ```
 ---
-GraphRAG Module Instructions
+## GraphRAG Module Instructions
 Ingest site content into Azure Cognitive Search index (see backend/ingest_acs.py).
 
 Populate Cosmos DB Gremlin graph with nodes and edges (via backend/graph_rag/graph_ingest.py).
@@ -118,11 +134,24 @@ To extend: add new nodes/relationships using the Gremlin API, then re-run ingest
 
 ---
 
-Known Limitations
+## Known Limitations / Future Improvements
 
-Scaling: Dev tiers (Free/Basic) are low-throughput; upgrade for high traffic.
+**Scaling:**
+Dev tiers (Free/Basic) are low-throughput; upgrade for high traffic.
 
-Costs: Azure Search and OpenAI usage can accrue charges—monitor your subscription and consider local OSS for dev.
+**Costs:**
+Azure Search and OpenAI usage can accrue charges—monitor your subscription and consider local OSS for dev. Gets very expensive fast
+
+**Scraping:**
+Due to scraping off of production URL had to work around cloudflare bot protection blocking, could not use default requests to get sites had to go through selenium and headed. This caused issues that would not happen with a local version including scraping being slow as it goes through the site in a BFS search finding all URL's. If we had a case where we had access to local version of made with nestle scraping could be a lot more efficent data for graphs and embedding would be complete without missing sections from taking so long all in all calling for way better responses from the chatbot. 
+
+**Incrimental re-ingestion:**
+Right now we re-scrape and re-embed on every run; a change-feed or webhook-driven pipeline would allow only new/updated pages to be processed, saving cost and time.
+
+ **Runtime Graph Editing**  
+Allow administrators to add nodes/edges via a simple API (e.g. `POST /graph/node`, `POST /graph/edge`) so the knowledge graph can be enriched without re-ingesting everything.
+
+
 
 
 
