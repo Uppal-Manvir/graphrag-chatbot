@@ -21,10 +21,11 @@ export default function QueryWidget() {
     setMessages(prev => [...prev, userMsg]);
     setQuestion('');
     setLoading(true);
-    console.log("BEFORE TRY")
+    //console.log("BEFORE TRY")
 
     try {
-      console.log("BEFORE REQ")
+      //console.log("BEFORE REQ")
+      //handle req to backend
       const apiBase = import.meta.env.VITE_API_URL
       const url = apiBase + "/query";
       const res = await fetch(url, {
@@ -32,7 +33,7 @@ export default function QueryWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userMsg.content })
       });
-      console.log("SENT REQ")
+      //console.log("SENT REQ")
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || 'Unknown error');
